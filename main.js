@@ -1,7 +1,7 @@
 var mainState = {
 
   constants: {
-    player_speed: 55,
+    player_speed: 30,
     player_animation_speed: 6,
   },
 
