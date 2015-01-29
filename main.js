@@ -12,16 +12,23 @@ var mainState = {
     game.scale.setScreenSize();
     game.stage.smoothed = false;
 
-    game.load.image('ground', 'assets/sand512x512.jpg');
     game.load.spritesheet('player', 'assets/player_sprites.png', 16, 16, 28)
     game.load.spritesheet('player_shadow', 'assets/player_shadow_sprites.png', 16, 16, 5)
+
+    game.load.image('sand', 'assets/sand64x64.png');
+    game.load.tilemap('map', 'assets/sand.json', null, Phaser.Tilemap.TILED_JSON);
   },
 
   create: function() {
     game.stage.backgroundColor = '#3498db';
     game.world.setBounds(0, 0, 512, 512);
     game.physics.startSystem(Phaser.Physics.P2JS);
-    this.ground = game.add.sprite(0, 0, 'ground')
+
+    this.map = game.add.tilemap('map');
+    this.map.addTilesetImage('sand64x64', 'sand');
+    this.layer = this.map.createLayer('Tile Layer 1');
+    this.layer.anchor.setTo(0, 0);
+
     this.player = game.add.sprite(game.world.centerX, game.world.centerY, 'player')
     this.player.animations.add('walk_left_right', [4,5,6,7,8,1,2,3]);
     this.player.animations.add('walk_down', [11,12,13,14,15,16,17,18]);
@@ -68,7 +75,8 @@ var mainState = {
 
   render: function() {
     // game.debug.cameraInfo(game.camera, 4, 0);
-    // game.debug.spriteCoords(this.player, 16, 128);
+    // game.debug.font = '10px Courier';
+    // game.debug.spriteCoords(this.player, -30, 60);
   }
 
 };
