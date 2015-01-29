@@ -30,6 +30,8 @@ var mainState = {
     cursors = game.input.keyboard.createCursorKeys();
 
     game.camera.follow(this.player);
+    // Stops camer jitter when following player
+    game.camera.roundPx = false;
   },
 
   update: function() {
