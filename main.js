@@ -1,13 +1,15 @@
 var mainState = {
 
   constants: {
+    game_size: 128,
+    game_scale: 4,
     player_speed: 30,
     player_animation_speed: 6,
   },
 
   preload: function() {
-    game.scale.maxWidth = 512;
-    game.scale.maxHeight = 512;
+    game.scale.maxWidth = this.constants.game_size * this.constants.game_scale;
+    game.scale.maxHeight = this.constants.game_size * this.constants.game_scale;
     game.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL;
     game.scale.setScreenSize();
     game.stage.smoothed = false;
@@ -81,6 +83,6 @@ var mainState = {
 
 };
 
-var game = new Phaser.Game(128, 128, Phaser.AUTO, 'gameDiv');
+var game = new Phaser.Game(mainState.constants.game_size, mainState.constants.game_size, Phaser.AUTO, 'gameDiv');
 game.state.add('main', mainState);
 game.state.start('main');
