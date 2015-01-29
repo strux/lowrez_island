@@ -1,7 +1,7 @@
 var mainState = {
 
   constants: {
-    player_speed: 50,
+    player_speed: 55,
     player_animation_speed: 6,
   },
 
@@ -15,8 +15,8 @@ var mainState = {
     game.load.spritesheet('player', 'assets/player_sprites.png', 16, 16, 28)
     game.load.spritesheet('player_shadow', 'assets/player_shadow_sprites.png', 16, 16, 5)
 
-    game.load.image('sand', 'assets/sand64x64.png');
-    game.load.tilemap('map', 'assets/sand.json', null, Phaser.Tilemap.TILED_JSON);
+    game.load.image('terrain', 'assets/terrain.png');
+    game.load.tilemap('level_1_map', 'assets/level_1.json', null, Phaser.Tilemap.TILED_JSON);
   },
 
   create: function() {
@@ -24,8 +24,8 @@ var mainState = {
     game.world.setBounds(0, 0, 512, 512);
     game.physics.startSystem(Phaser.Physics.P2JS);
 
-    this.map = game.add.tilemap('map');
-    this.map.addTilesetImage('sand64x64', 'sand');
+    this.map = game.add.tilemap('level_1_map');
+    this.map.addTilesetImage('terrain', 'terrain');
     this.layer = this.map.createLayer('Tile Layer 1');
     this.layer.anchor.setTo(0, 0);
 
