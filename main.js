@@ -4,7 +4,7 @@ var mainState = {
     game_size: 128,
     game_scale: 4,
     player_speed: 30,
-    player_animation_speed: 6,
+    player_animation_speed: 8,
   },
 
   preload: function() {
@@ -28,8 +28,12 @@ var mainState = {
 
     this.map = game.add.tilemap('level_1_map');
     this.map.addTilesetImage('terrain', 'terrain');
-    this.layer = this.map.createLayer('Tile Layer 1');
-    this.layer.anchor.setTo(0, 0);
+    this.ocean = this.map.createLayer('Tile Layer 1');
+    this.ocean.anchor.setTo(0, 0);
+    this.shallows = this.map.createLayer('Tile Layer 2');
+    this.shallows.anchor.setTo(0, 0);
+    this.sand = this.map.createLayer('Tile Layer 3');
+    this.sand.anchor.setTo(0, 0);
 
     this.player = game.add.sprite(game.world.centerX, game.world.centerY, 'player')
     this.player.animations.add('walk_left_right', [4,5,6,7,8,1,2,3]);
