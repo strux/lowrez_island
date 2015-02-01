@@ -71,8 +71,24 @@ var mainState = {
     this.shadowTexture.context.fillStyle = 'rgb(255, 255, 255)';
     this.shadowTexture.context.fillRect(0, 0, this.game.width, this.game.height);
 
+    this.movePlayer();
 
+    /*
+    this.player_shadow.x = this.player.x;
+    this.player_shadow.y = this.player.y;
+    */
 
+    this.lightSprite.x = this.player.x;
+    this.lightSprite.y = this.player.y;
+  },
+
+  render: function() {
+    // game.debug.cameraInfo(game.camera, 4, 0);
+    // game.debug.font = '10px Courier';
+    // game.debug.spriteCoords(this.player, -30, 60);
+  },
+
+  movePlayer: function() {
     this.player.body.setZeroVelocity();
 
     if (cursors.up.isDown) {
@@ -102,19 +118,6 @@ var mainState = {
       else if (this.player.facing == 'down') { this.player.frame = 10; }
       else { this.player.frame = 0; }
     }
-    /*
-    this.player_shadow.x = this.player.x;
-    this.player_shadow.y = this.player.y;
-    */
-
-    this.lightSprite.x = this.player.x;
-    this.lightSprite.y = this.player.y;
-  },
-
-  render: function() {
-    // game.debug.cameraInfo(game.camera, 4, 0);
-    // game.debug.font = '10px Courier';
-    // game.debug.spriteCoords(this.player, -30, 60);
   }
 
 };
