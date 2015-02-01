@@ -3,6 +3,7 @@ var mainState = {
   constants: {
     gameSize: 128,
     gameScale: 4,
+    dayLength: 20,
     playerSpeed: 70,
     playerAimationSpeed: 11,
   },
@@ -39,12 +40,6 @@ var mainState = {
     this.player.animations.add('walkLeftRight', [1,2,3,4,5,6,7,8]);
     this.player.animations.add('walkDown', [10,11,12,13,14,15,16,17]);
     this.player.animations.add('walkUp', [20,21,22,23,24,25,26,27]);
-    /*
-    this.playerShadow = game.add.sprite(this.player.x,  this.player.y, 'playerShadow', 2)
-    this.playerShadow.anchor.setTo(.5, .5);
-    this.playerShadow.alpha = .2;
-    */
-
 
     // Create the shadow texture
     this.shadowTexture = this.game.add.bitmapData(this.game.width, this.game.height);
@@ -66,20 +61,9 @@ var mainState = {
   },
 
   update: function() {
-    // dusk approx
-    //this.shadowTexture.context.fillStyle = 'rgb(200, 120, 120)';
-    this.shadowTexture.context.fillStyle = 'rgb(255, 255, 255)';
-    this.shadowTexture.context.fillRect(0, 0, this.game.width, this.game.height);
 
     this.movePlayer();
-
-    /*
-    this.playerShadow.x = this.player.x;
-    this.playerShadow.y = this.player.y;
-    */
-
-    this.lightSprite.x = this.player.x;
-    this.lightSprite.y = this.player.y;
+    this.moveSun();
   },
 
   render: function() {
@@ -118,8 +102,31 @@ var mainState = {
       else if (this.player.facing == 'down') { this.player.frame = 10; }
       else { this.player.frame = 0; }
     }
-  }
+    this.lightSprite.x = this.player.x;
+    this.lightSprite.y = this.player.y;
+  },
 
+  moveSun: function() {
+    var time = Math.floor(this.game.time.totalElapsedSeconds() % this.constants.dayLength),
+        dayQuadrantLength = this.constants.dayLength / 4,
+        dawnTime = 0,
+        noonTime = dayQuadrantLength * 2,
+        duskTime = dayQuadrantLength * 3,
+        rgb = 255,
+        rgbMultiplier = 255 / dayQuadrantLength,
+        rgb_string = '';
+
+    if (time >= dawnTime && time <= noonTime) {
+      rgb = Math.ceil((time - dawnTime) * rgbMultiplier);
+    }
+    else if (time > duskTime) {
+      rgb = 255 - Math.ceil((time - duskTime) * rgbMultiplier);
+    }
+    rgb_string = 'rgb(' + (rgb + 50) + ', ' + rgb + ', ' + rgb + ')';
+    this.shadowTexture.context.fillStyle = rgb_string;
+    this.shadowTexture.context.fillRect(0, 0, this.game.width, this.game.height);
+    this.shadowTexture.dirty = true;
+  }
 };
 
 var game = new Phaser.Game(mainState.constants.gameSize, mainState.constants.gameSize, Phaser.AUTO, 'gameDiv');
