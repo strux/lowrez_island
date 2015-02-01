@@ -76,25 +76,31 @@ var mainState = {
     this.player.body.setZeroVelocity();
 
     if (cursors.up.isDown) {
+      this.player.facing = 'up';
       this.player.body.moveUp(this.constants.player_speed)
       this.player.animations.play('walk_up', this.constants.player_animation_speed, true);
     }
     else if (cursors.down.isDown) {
+      this.player.facing = 'down';
       this.player.body.moveDown(this.constants.player_speed);
       this.player.animations.play('walk_down', this.constants.player_animation_speed, true);
     }
-    if (cursors.left.isDown) {
+    else if (cursors.left.isDown) {
+      this.player.facing = 'left';
       this.player.body.moveLeft(this.constants.player_speed);
       this.player.scale.x = -1;
       this.player.animations.play('walk_left_right', this.constants.player_animation_speed, true);
     }
     else if (cursors.right.isDown) {
+      this.player.facing = 'right';
       this.player.body.moveRight(this.constants.player_speed);
       this.player.scale.x = 1;
       this.player.animations.play('walk_left_right', this.constants.player_animation_speed, true);
     }
     if (!cursors.up.isDown && !cursors.down.isDown && !cursors.left.isDown && !cursors.right.isDown) {
-      this.player.frame = 0;
+      if (this.player.facing == 'up') { this.player.frame = 20; }
+      else if (this.player.facing == 'down') { this.player.frame = 10; }
+      else { this.player.frame = 0; }
     }
     /*
     this.player_shadow.x = this.player.x;
