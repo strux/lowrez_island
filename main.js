@@ -3,7 +3,7 @@ var mainState = {
   constants: {
     gameSize: 128,
     gameScale: 4,
-    dayLength: 20,
+    dayLength: 60 * 12,
     playerSpeed: 70,
     playerAimationSpeed: 11,
   },
@@ -73,6 +73,8 @@ var mainState = {
   },
 
   movePlayer: function() {
+    this.lightSprite.x = this.player.x;
+    this.lightSprite.y = this.player.y;
     this.player.body.setZeroVelocity();
 
     if (cursors.up.isDown) {
@@ -102,27 +104,36 @@ var mainState = {
       else if (this.player.facing == 'down') { this.player.frame = 10; }
       else { this.player.frame = 0; }
     }
-    this.lightSprite.x = this.player.x;
-    this.lightSprite.y = this.player.y;
   },
 
   moveSun: function() {
     var time = Math.floor(this.game.time.totalElapsedSeconds() % this.constants.dayLength),
-        dayQuadrantLength = this.constants.dayLength / 4,
+        daySegmentLength = this.constants.dayLength / 6,
         dawnTime = 0,
-        noonTime = dayQuadrantLength * 2,
-        duskTime = dayQuadrantLength * 3,
+        dayTime = daySegmentLength * 1,
+        afternoonTime = daySegmentLength * 2,
+        duskTime = daySegmentLength * 3,
+        nightTime = daySegmentLength * 4,
+        midnight = daySegmentLength * 5,
         rgb = 255,
-        rgbMultiplier = 255 / dayQuadrantLength,
-        rgb_string = '';
+        rgbMin = 30,
+        redshiftMin = 50,
+        rgbMultiplier = (255 - rgbMin) / daySegmentLength,
+        rgb_string = ''
+        red = function(rgb) {
+          return rgb > redshiftMin ? rgb + 40 : rgb;
+        };
 
-    if (time >= dawnTime && time <= noonTime) {
-      rgb = Math.ceil((time - dawnTime) * rgbMultiplier);
+    if (time >= dawnTime && time <= dayTime) {
+      rgb = rgbMin + Math.ceil((time - dawnTime) * rgbMultiplier);
     }
-    else if (time > duskTime) {
+    else if (time > duskTime && time <= nightTime) {
       rgb = 255 - Math.ceil((time - duskTime) * rgbMultiplier);
     }
-    rgb_string = 'rgb(' + (rgb + 50) + ', ' + rgb + ', ' + rgb + ')';
+    else if (time > nightTime) {
+      rgb = rgbMin;
+    }
+    rgb_string = 'rgb(' + red(rgb) + ', ' + rgb + ', ' + rgb + ')';
     this.shadowTexture.context.fillStyle = rgb_string;
     this.shadowTexture.context.fillRect(0, 0, this.game.width, this.game.height);
     this.shadowTexture.dirty = true;
