@@ -1,24 +1,24 @@
 var mainState = {
 
   constants: {
-    game_size: 128,
-    game_scale: 4,
-    player_speed: 70,
-    player_animation_speed: 11,
+    gameSize: 128,
+    gameScale: 4,
+    playerSpeed: 70,
+    playerAimationSpeed: 11,
   },
 
   preload: function() {
-    game.scale.maxWidth = this.constants.game_size * this.constants.game_scale;
-    game.scale.maxHeight = this.constants.game_size * this.constants.game_scale;
+    game.scale.maxWidth = this.constants.gameSize * this.constants.gameScale;
+    game.scale.maxHeight = this.constants.gameSize * this.constants.gameScale;
     game.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL;
     game.scale.setScreenSize();
     game.stage.smoothed = false;
 
     game.load.spritesheet('player', 'assets/player_sprites.png', 16, 16, 27)
-    game.load.spritesheet('player_shadow', 'assets/player_shadow_sprites.png', 16, 16, 5)
+    game.load.spritesheet('playerShadow', 'assets/player_shadow_sprites.png', 16, 16, 5)
 
     game.load.image('terrain', 'assets/terrain.png');
-    game.load.tilemap('level_1_map', 'assets/level_1.json', null, Phaser.Tilemap.TILED_JSON);
+    game.load.tilemap('level1Map', 'assets/level_1.json', null, Phaser.Tilemap.TILED_JSON);
   },
 
   create: function() {
@@ -26,7 +26,7 @@ var mainState = {
     game.world.setBounds(0, 0, 512, 512);
     game.physics.startSystem(Phaser.Physics.P2JS);
 
-    this.map = game.add.tilemap('level_1_map');
+    this.map = game.add.tilemap('level1Map');
     this.map.addTilesetImage('terrain', 'terrain');
     this.ocean = this.map.createLayer('Tile Layer 1');
     this.ocean.anchor.setTo(0, 0);
@@ -36,13 +36,13 @@ var mainState = {
     this.sand.anchor.setTo(0, 0);
 
     this.player = game.add.sprite(game.world.centerX, game.world.centerY, 'player')
-    this.player.animations.add('walk_left_right', [1,2,3,4,5,6,7,8]);
-    this.player.animations.add('walk_down', [10,11,12,13,14,15,16,17]);
-    this.player.animations.add('walk_up', [20,21,22,23,24,25,26,27]);
+    this.player.animations.add('walkLeftRight', [1,2,3,4,5,6,7,8]);
+    this.player.animations.add('walkDown', [10,11,12,13,14,15,16,17]);
+    this.player.animations.add('walkUp', [20,21,22,23,24,25,26,27]);
     /*
-    this.player_shadow = game.add.sprite(this.player.x,  this.player.y, 'player_shadow', 2)
-    this.player_shadow.anchor.setTo(.5, .5);
-    this.player_shadow.alpha = .2;
+    this.playerShadow = game.add.sprite(this.player.x,  this.player.y, 'playerShadow', 2)
+    this.playerShadow.anchor.setTo(.5, .5);
+    this.playerShadow.alpha = .2;
     */
 
 
@@ -74,8 +74,8 @@ var mainState = {
     this.movePlayer();
 
     /*
-    this.player_shadow.x = this.player.x;
-    this.player_shadow.y = this.player.y;
+    this.playerShadow.x = this.player.x;
+    this.playerShadow.y = this.player.y;
     */
 
     this.lightSprite.x = this.player.x;
@@ -93,25 +93,25 @@ var mainState = {
 
     if (cursors.up.isDown) {
       this.player.facing = 'up';
-      this.player.body.moveUp(this.constants.player_speed)
-      this.player.animations.play('walk_up', this.constants.player_animation_speed, true);
+      this.player.body.moveUp(this.constants.playerSpeed)
+      this.player.animations.play('walkUp', this.constants.playerAimationSpeed, true);
     }
     else if (cursors.down.isDown) {
       this.player.facing = 'down';
-      this.player.body.moveDown(this.constants.player_speed);
-      this.player.animations.play('walk_down', this.constants.player_animation_speed, true);
+      this.player.body.moveDown(this.constants.playerSpeed);
+      this.player.animations.play('walkDown', this.constants.playerAimationSpeed, true);
     }
     else if (cursors.left.isDown) {
       this.player.facing = 'left';
-      this.player.body.moveLeft(this.constants.player_speed);
+      this.player.body.moveLeft(this.constants.playerSpeed);
       this.player.scale.x = -1;
-      this.player.animations.play('walk_left_right', this.constants.player_animation_speed, true);
+      this.player.animations.play('walkLeftRight', this.constants.playerAimationSpeed, true);
     }
     else if (cursors.right.isDown) {
       this.player.facing = 'right';
-      this.player.body.moveRight(this.constants.player_speed);
+      this.player.body.moveRight(this.constants.playerSpeed);
       this.player.scale.x = 1;
-      this.player.animations.play('walk_left_right', this.constants.player_animation_speed, true);
+      this.player.animations.play('walkLeftRight', this.constants.playerAimationSpeed, true);
     }
     if (!cursors.up.isDown && !cursors.down.isDown && !cursors.left.isDown && !cursors.right.isDown) {
       if (this.player.facing == 'up') { this.player.frame = 20; }
@@ -122,6 +122,6 @@ var mainState = {
 
 };
 
-var game = new Phaser.Game(mainState.constants.game_size, mainState.constants.game_size, Phaser.AUTO, 'gameDiv');
+var game = new Phaser.Game(mainState.constants.gameSize, mainState.constants.gameSize, Phaser.AUTO, 'gameDiv');
 game.state.add('main', mainState);
 game.state.start('main');
