@@ -5,6 +5,7 @@ var mainState = {
     gameScale: 4,
     dayLength: 60 * 12,
     playerSpeed: 70,
+    playerBlinkInterval: 7,
     playerAimationSpeed: 11,
   },
 
@@ -15,7 +16,7 @@ var mainState = {
     game.scale.setScreenSize();
     game.stage.smoothed = false;
 
-    game.load.spritesheet('player', 'assets/player_sprites.png', 16, 16, 27)
+    game.load.spritesheet('player', 'assets/player_sprites.png', 16, 16, 30)
     game.load.spritesheet('playerShadow', 'assets/player_shadow_sprites.png', 16, 16, 5)
 
     game.load.image('terrain', 'assets/terrain.png');
@@ -37,9 +38,13 @@ var mainState = {
     this.sand.anchor.setTo(0, 0);
 
     this.player = game.add.sprite(game.world.centerX, game.world.centerY, 'player')
-    this.player.animations.add('walkLeftRight', [1,2,3,4,5,6,7,8]);
-    this.player.animations.add('walkDown', [10,11,12,13,14,15,16,17]);
-    this.player.animations.add('walkUp', [20,21,22,23,24,25,26,27]);
+    this.player.animations.add('walkLeftRight', [2,3,4,5,6,7,8,9]);
+    this.player.animations.add('blinkLeftRight', [0,1]);
+    this.player.animations.add('walkDown', [11,12,13,14,15,16,17,18]);
+    this.player.animations.add('blinkDown', [10,11]);
+    this.player.animations.add('walkUp', [21,22,23,24,25,26,27,28]);
+
+    this.player.lastBlink = 0;
 
     // Create the shadow texture
     this.shadowTexture = this.game.add.bitmapData(this.game.width, this.game.height);
@@ -76,6 +81,7 @@ var mainState = {
     this.lightSprite.x = this.player.x;
     this.lightSprite.y = this.player.y;
     this.player.body.setZeroVelocity();
+    if (this.player.frame == 10) this.player.frame = 11;
 
     if (cursors.up.isDown) {
       this.player.facing = 'up';
@@ -100,9 +106,29 @@ var mainState = {
       this.player.animations.play('walkLeftRight', this.constants.playerAimationSpeed, true);
     }
     if (!cursors.up.isDown && !cursors.down.isDown && !cursors.left.isDown && !cursors.right.isDown) {
-      if (this.player.facing == 'up') { this.player.frame = 20; }
-      else if (this.player.facing == 'down') { this.player.frame = 10; }
-      else { this.player.frame = 0; }
+      var blink = false;
+      if (this.game.time.elapsedSecondsSince(this.player.lastBlink) >= this.constants.playerBlinkInterval) {
+        blink = true;
+      }
+      if (this.player.facing == 'up') { this.player.frame = 21; }
+      else if (this.player.facing == 'down') {
+        if(blink) {
+          this.player.blinkAnimation = this.player.animations.play('blinkDown', 9, false);
+          this.player.lastBlink = game.time.time
+        }
+        else if (!this.player.blinkAnimation.isPlaying) {
+          this.player.frame = 11;
+        }
+      }
+      else {
+        if(blink) {
+          this.player.blinkAnimation = this.player.animations.play('blinkLeftRight', 9, false);
+          this.player.lastBlink = game.time.time;
+        }
+        else if (!this.player.blinkAnimation.isPlaying) {
+          this.player.frame = 1;
+        }
+      }
     }
   },
 
