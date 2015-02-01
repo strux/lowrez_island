@@ -3,8 +3,8 @@ var mainState = {
   constants: {
     game_size: 128,
     game_scale: 4,
-    player_speed: 30,
-    player_animation_speed: 8,
+    player_speed: 70,
+    player_animation_speed: 11,
   },
 
   preload: function() {
@@ -14,7 +14,7 @@ var mainState = {
     game.scale.setScreenSize();
     game.stage.smoothed = false;
 
-    game.load.spritesheet('player', 'assets/player_sprites.png', 16, 16, 28)
+    game.load.spritesheet('player', 'assets/player_sprites.png', 16, 16, 27)
     game.load.spritesheet('player_shadow', 'assets/player_shadow_sprites.png', 16, 16, 5)
 
     game.load.image('terrain', 'assets/terrain.png');
@@ -36,12 +36,26 @@ var mainState = {
     this.sand.anchor.setTo(0, 0);
 
     this.player = game.add.sprite(game.world.centerX, game.world.centerY, 'player')
-    this.player.animations.add('walk_left_right', [4,5,6,7,8,1,2,3]);
-    this.player.animations.add('walk_down', [11,12,13,14,15,16,17,18]);
-    this.player.animations.add('walk_up', [21,22,23,24,25,26,27,28]);
+    this.player.animations.add('walk_left_right', [1,2,3,4,5,6,7,8]);
+    this.player.animations.add('walk_down', [10,11,12,13,14,15,16,17]);
+    this.player.animations.add('walk_up', [20,21,22,23,24,25,26,27]);
+    /*
     this.player_shadow = game.add.sprite(this.player.x,  this.player.y, 'player_shadow', 2)
     this.player_shadow.anchor.setTo(.5, .5);
     this.player_shadow.alpha = .2;
+    */
+
+
+    // Create the shadow texture
+    this.shadowTexture = this.game.add.bitmapData(this.game.width, this.game.height);
+
+    // Create an object that will use the bitmap as a texture
+    this.lightSprite = this.game.add.image(0, 0, this.shadowTexture);
+
+    // Set the blend mode to MULTIPLY. This will darken the colors of
+    // everything below this sprite.
+    this.lightSprite.blendMode = Phaser.blendModes.MULTIPLY;
+    this.lightSprite.anchor.setTo(.5, .5);
 
     game.physics.p2.enable(this.player);
     cursors = game.input.keyboard.createCursorKeys();
@@ -52,6 +66,13 @@ var mainState = {
   },
 
   update: function() {
+    // dusk approx
+    //this.shadowTexture.context.fillStyle = 'rgb(200, 120, 120)';
+    this.shadowTexture.context.fillStyle = 'rgb(255, 255, 255)';
+    this.shadowTexture.context.fillRect(0, 0, this.game.width, this.game.height);
+
+
+
     this.player.body.setZeroVelocity();
 
     if (cursors.up.isDown) {
@@ -75,8 +96,13 @@ var mainState = {
     if (!cursors.up.isDown && !cursors.down.isDown && !cursors.left.isDown && !cursors.right.isDown) {
       this.player.frame = 0;
     }
+    /*
     this.player_shadow.x = this.player.x;
     this.player_shadow.y = this.player.y;
+    */
+
+    this.lightSprite.x = this.player.x;
+    this.lightSprite.y = this.player.y;
   },
 
   render: function() {
