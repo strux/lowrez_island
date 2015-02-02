@@ -36,6 +36,8 @@ var mainState = {
     this.shallows.anchor.setTo(0, 0);
     this.sand = this.map.createLayer('Tile Layer 3');
     this.sand.anchor.setTo(0, 0);
+    this.grass = this.map.createLayer('Tile Layer 4');
+    this.grass.anchor.setTo(0, 0);
 
     this.player = game.add.sprite(game.world.centerX, game.world.centerY, 'player')
     this.player.animations.add('walkLeftRight', [2,3,4,5,6,7,8,9]);
@@ -66,7 +68,6 @@ var mainState = {
   },
 
   update: function() {
-
     this.movePlayer();
     this.moveSun();
   },
@@ -149,6 +150,9 @@ var mainState = {
         red = function(rgb) {
           return rgb > redshiftMin ? rgb + 40 : rgb;
         };
+
+    // Jump to daytime
+    time += daySegmentLength;
 
     if (time >= dawnTime && time <= dayTime) {
       rgb = rgbMin + Math.ceil((time - dawnTime) * rgbMultiplier);
