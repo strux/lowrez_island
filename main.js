@@ -38,6 +38,8 @@ var mainState = {
     this.sand.anchor.setTo(0, 0);
     this.grass = this.map.createLayer('Tile Layer 4');
     this.grass.anchor.setTo(0, 0);
+    this.plants = this.map.createLayer('Tile Layer 5');
+    this.plants.anchor.setTo(0, 0);
 
     this.player = game.add.sprite(game.world.centerX, game.world.centerY, 'player')
     this.player.animations.add('walkLeftRight', [2,3,4,5,6,7,8,9]);
