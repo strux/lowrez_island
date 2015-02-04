@@ -2,7 +2,7 @@ var mainState = {
 
   constants: {
     gameSize: 128,
-    gameScale: 4,
+    gameScale: 3,
     dayLength: 60 * 12,
     playerSpeed: 70,
     playerBlinkInterval: 7,
@@ -16,8 +16,7 @@ var mainState = {
     game.scale.setScreenSize();
     game.stage.smoothed = false;
 
-    game.load.spritesheet('player', 'assets/player_sprites.png', 16, 16, 30)
-    game.load.spritesheet('playerShadow', 'assets/player_shadow_sprites.png', 16, 16, 5)
+    game.load.spritesheet('player', 'assets/player_sprites.png', 6, 10, 30)
 
     game.load.image('terrain', 'assets/terrain.png');
     game.load.tilemap('level1Map', 'assets/level_1.json', null, Phaser.Tilemap.TILED_JSON);
@@ -26,7 +25,7 @@ var mainState = {
   create: function() {
     game.stage.backgroundColor = '#3498db';
     game.world.setBounds(0, 0, 512, 512);
-    game.physics.startSystem(Phaser.Physics.P2JS);
+    game.physics.startSystem(Phaser.Physics.ARCADE);
 
     this.map = game.add.tilemap('level1Map');
     this.map.addTilesetImage('terrain', 'terrain');
@@ -41,7 +40,13 @@ var mainState = {
     this.plants = this.map.createLayer('Tile Layer 5');
     this.plants.anchor.setTo(0, 0);
 
+    // this.map.setCollision(33, true, this.shallows);
+    this.map.setTileIndexCallback(33, function(){ console.log('test') }, this, this.shallows);
+    this.shallows.debug = true;
+
+
     this.player = game.add.sprite(game.world.centerX, game.world.centerY, 'player')
+    this.player.anchor.setTo(.5, .5);
     this.player.animations.add('walkLeftRight', [2,3,4,5,6,7,8,9]);
     this.player.animations.add('blinkLeftRight', [0,1]);
     this.player.animations.add('walkDown', [11,12,13,14,15,16,17,18]);
@@ -61,7 +66,7 @@ var mainState = {
     this.lightSprite.blendMode = Phaser.blendModes.MULTIPLY;
     this.lightSprite.anchor.setTo(.5, .5);
 
-    game.physics.p2.enable(this.player);
+    game.physics.arcade.enable(this.player);
     cursors = game.input.keyboard.createCursorKeys();
 
     game.camera.follow(this.player);
@@ -70,6 +75,7 @@ var mainState = {
   },
 
   update: function() {
+    this.game.physics.arcade.collide(this.player, this.shallows);
     this.movePlayer();
     this.moveSun();
   },
@@ -80,31 +86,36 @@ var mainState = {
     // game.debug.spriteCoords(this.player, -30, 60);
   },
 
+  wade: function() {
+    console.log("i'm wadin!!!");
+  },
+
   movePlayer: function() {
     this.lightSprite.x = this.player.x;
     this.lightSprite.y = this.player.y;
-    this.player.body.setZeroVelocity();
+    this.player.body.velocity.x = 0;
+    this.player.body.velocity.y = 0;
     if (this.player.frame == 10) this.player.frame = 11;
 
     if (cursors.up.isDown) {
       this.player.facing = 'up';
-      this.player.body.moveUp(this.constants.playerSpeed)
+      this.player.body.velocity.y = -this.constants.playerSpeed
       this.player.animations.play('walkUp', this.constants.playerAimationSpeed, true);
     }
     else if (cursors.down.isDown) {
       this.player.facing = 'down';
-      this.player.body.moveDown(this.constants.playerSpeed);
+      this.player.body.velocity.y = this.constants.playerSpeed;
       this.player.animations.play('walkDown', this.constants.playerAimationSpeed, true);
     }
     else if (cursors.left.isDown) {
       this.player.facing = 'left';
-      this.player.body.moveLeft(this.constants.playerSpeed);
+      this.player.body.velocity.x = -this.constants.playerSpeed;
       this.player.scale.x = -1;
       this.player.animations.play('walkLeftRight', this.constants.playerAimationSpeed, true);
     }
     else if (cursors.right.isDown) {
       this.player.facing = 'right';
-      this.player.body.moveRight(this.constants.playerSpeed);
+      this.player.body.velocity.x = this.constants.playerSpeed;
       this.player.scale.x = 1;
       this.player.animations.play('walkLeftRight', this.constants.playerAimationSpeed, true);
     }
