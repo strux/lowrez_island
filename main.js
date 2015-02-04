@@ -41,7 +41,7 @@ var mainState = {
     this.plants.anchor.setTo(0, 0);
 
     // this.map.setCollision(33, true, this.shallows);
-    this.map.setTileIndexCallback(33, function(){ console.log('test') }, this, this.shallows);
+    this.map.setTileIndexCallback(33, this.wading, this, this.shallows);
     this.shallows.debug = true;
 
 
@@ -86,8 +86,8 @@ var mainState = {
     // game.debug.spriteCoords(this.player, -30, 60);
   },
 
-  wade: function() {
-    console.log("i'm wadin!!!");
+  wading: function() {
+    // console.log("i'm wadin!!!");
   },
 
   movePlayer: function() {
