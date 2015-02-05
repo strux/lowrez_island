@@ -205,8 +205,8 @@ var mainState = {
         nightTime = daySegmentLength * 4,
         midnight = daySegmentLength * 5,
         rgb = 255,
-        rgbMin = 30,
-        redshiftMin = 50,
+        rgbMin = 40,
+        redshiftMin = 60,
         rgbMultiplier = (255 - rgbMin) / daySegmentLength,
         rgb_string = ''
         red = function(rgb) {
@@ -214,7 +214,7 @@ var mainState = {
         };
 
     // Jump to daytime
-    time += daySegmentLength;
+    time += daySegmentLength * 1;
 
     if (time >= dawnTime && time <= dayTime) {
       rgb = rgbMin + Math.ceil((time - dawnTime) * rgbMultiplier);
