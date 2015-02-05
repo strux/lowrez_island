@@ -2,7 +2,7 @@ var mainState = {
 
   constants: {
     gameSize: 128,
-    gameScale: 3,
+    gameScale: 4,
     dayLength: 60 * 12,
     playerSpeed: 70,
     playerBlinkInterval: 7,
@@ -29,20 +29,14 @@ var mainState = {
 
     this.map = game.add.tilemap('level1Map');
     this.map.addTilesetImage('terrain', 'terrain');
-    this.ocean = this.map.createLayer('Tile Layer 1');
-    this.ocean.anchor.setTo(0, 0);
-    this.shallows = this.map.createLayer('Tile Layer 2');
-    this.shallows.anchor.setTo(0, 0);
-    this.sand = this.map.createLayer('Tile Layer 3');
-    this.sand.anchor.setTo(0, 0);
-    this.grass = this.map.createLayer('Tile Layer 4');
-    this.grass.anchor.setTo(0, 0);
-    this.plants = this.map.createLayer('Tile Layer 5');
-    this.plants.anchor.setTo(0, 0);
+    this.base_layer = this.map.createLayer('base');
+    this.base_layer.anchor.setTo(0, 0);
+    this.transition_layer = this.map.createLayer('transitions');
+    this.transition_layer.anchor.setTo(0, 0);
 
-    // this.map.setCollision(33, true, this.shallows);
-    this.map.setTileIndexCallback(33, this.wading, this, this.shallows);
-    this.shallows.debug = true;
+    // this.map.setCollision(33, true, this.base_layer);
+    this.map.setTileIndexCallback(33, this.wading, this, this.base_layer);
+    // this.base_layer.debug = true;
 
 
     this.player = game.add.sprite(game.world.centerX, game.world.centerY, 'player')
@@ -75,7 +69,7 @@ var mainState = {
   },
 
   update: function() {
-    this.game.physics.arcade.collide(this.player, this.shallows);
+    this.game.physics.arcade.collide(this.player, this.base_layer);
     this.movePlayer();
     this.moveSun();
   },
