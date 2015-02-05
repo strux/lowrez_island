@@ -4,9 +4,7 @@ var mainState = {
     gameSize: 128,
     gameScale: 4,
     dayLength: 60 * 12,
-    playerSpeed: 70,
     playerBlinkInterval: 7,
-    playerAimationSpeed: 11,
   },
 
   preload: function() {
@@ -16,7 +14,7 @@ var mainState = {
     game.scale.setScreenSize();
     game.stage.smoothed = false;
 
-    game.load.spritesheet('player', 'assets/player_sprites.png', 6, 10, 30)
+    game.load.spritesheet('player', 'assets/player_sprites.png', 6, 10, 50)
 
     game.load.image('terrain', 'assets/terrain.png');
     game.load.tilemap('level1Map', 'assets/level_1.json', null, Phaser.Tilemap.TILED_JSON);
@@ -34,16 +32,17 @@ var mainState = {
     this.transition_layer = this.map.createLayer('transitions');
     this.transition_layer.anchor.setTo(0, 0);
 
-    // this.map.setCollision(33, true, this.base_layer);
+    this.map.setTileIndexCallback(65, this.walking, this, this.base_layer);
     this.map.setTileIndexCallback(33, this.wading, this, this.base_layer);
-    // this.base_layer.debug = true;
-
+    this.map.setTileIndexCallback(1, this.swimming, this, this.base_layer);
 
     this.player = game.add.sprite(game.world.centerX, game.world.centerY, 'player')
     this.player.anchor.setTo(.5, .5);
     this.player.animations.add('walkLeftRight', [2,3,4,5,6,7,8,9]);
+    this.player.animations.add('swimLeftRight', [30,31,32,33,34,35,36,37]);
     this.player.animations.add('blinkLeftRight', [0,1]);
     this.player.animations.add('walkDown', [11,12,13,14,15,16,17,18]);
+    this.player.animations.add('swimUpDown', [40,41,42,43,44,45,46,47]);
     this.player.animations.add('blinkDown', [10,11]);
     this.player.animations.add('walkUp', [21,22,23,24,25,26,27,28]);
 
@@ -80,45 +79,101 @@ var mainState = {
     // game.debug.spriteCoords(this.player, -30, 60);
   },
 
+  walking: function() {
+    this.player.locomotion = 'walking';
+  },
+
   wading: function() {
-    // console.log("i'm wadin!!!");
+    this.player.locomotion = 'wading';
+  },
+
+  swimming: function() {
+    this.player.locomotion = 'swimming';
   },
 
   movePlayer: function() {
+    var walkingSpeed = 65,
+        walkingAnimationSpeed = 11,
+        wadingSpeed = walkingSpeed * .8,
+        swimmingSpeed = walkingSpeed * .4,
+        swimmingAnimationSpeed = 4,
+        speed = walkingSpeed;
+
     this.lightSprite.x = this.player.x;
     this.lightSprite.y = this.player.y;
     this.player.body.velocity.x = 0;
     this.player.body.velocity.y = 0;
-    if (this.player.frame == 10) this.player.frame = 11;
+    if (this.player.locomotion == 'wading') {
+      this.player.crop(new Phaser.Rectangle(0, 0, 6, 6));
+      speed = wadingSpeed;
+    } else {
+      // reset
+      this.player.crop();
+    }
 
     if (cursors.up.isDown) {
       this.player.facing = 'up';
-      this.player.body.velocity.y = -this.constants.playerSpeed
-      this.player.animations.play('walkUp', this.constants.playerAimationSpeed, true);
+      if (this.player.locomotion == 'swimming') {
+        this.player.angle = 0;
+        this.player.body.velocity.y = -swimmingSpeed;
+        this.player.animations.play('swimUpDown', swimmingAnimationSpeed, true);
+      } else {
+        this.player.angle = 0;
+        this.player.body.velocity.y = -speed
+        this.player.animations.play('walkUp', walkingAnimationSpeed, true);
+      }
     }
     else if (cursors.down.isDown) {
       this.player.facing = 'down';
-      this.player.body.velocity.y = this.constants.playerSpeed;
-      this.player.animations.play('walkDown', this.constants.playerAimationSpeed, true);
+      if (this.player.locomotion == 'swimming') {
+        this.player.angle = 180;
+        this.player.body.velocity.y = swimmingSpeed;
+        this.player.animations.play('swimUpDown', swimmingAnimationSpeed, true);
+      } else {
+        this.player.angle = 0;
+        this.player.body.velocity.y = speed;
+        this.player.animations.play('walkDown', walkingAnimationSpeed, true);
+      }
     }
     else if (cursors.left.isDown) {
       this.player.facing = 'left';
-      this.player.body.velocity.x = -this.constants.playerSpeed;
       this.player.scale.x = -1;
-      this.player.animations.play('walkLeftRight', this.constants.playerAimationSpeed, true);
+      if (this.player.locomotion == 'swimming') {
+        this.player.angle = -90;
+        this.player.body.velocity.x = -swimmingSpeed;
+        this.player.animations.play('swimLeftRight', swimmingAnimationSpeed, true);
+      } else {
+        this.player.angle = 0;
+        this.player.body.velocity.x = -speed;
+        this.player.animations.play('walkLeftRight', walkingAnimationSpeed, true);
+      }
     }
     else if (cursors.right.isDown) {
       this.player.facing = 'right';
-      this.player.body.velocity.x = this.constants.playerSpeed;
       this.player.scale.x = 1;
-      this.player.animations.play('walkLeftRight', this.constants.playerAimationSpeed, true);
+      if (this.player.locomotion == 'swimming') {
+        this.player.angle = 90;
+        this.player.body.velocity.x = swimmingSpeed;
+        this.player.animations.play('swimLeftRight', swimmingAnimationSpeed, true);
+      } else {
+        this.player.angle = 0;
+        this.player.body.velocity.x = speed;
+        this.player.animations.play('walkLeftRight', walkingAnimationSpeed, true);
+      }
     }
     if (!cursors.up.isDown && !cursors.down.isDown && !cursors.left.isDown && !cursors.right.isDown) {
       var blink = false;
       if (this.game.time.elapsedSecondsSince(this.player.lastBlink) >= this.constants.playerBlinkInterval) {
         blink = true;
       }
-      if (this.player.facing == 'up') { this.player.frame = 21; }
+      if (this.player.locomotion == 'swimming') {
+        if (this.player.facing == 'up' || this.player.facing == 'down') {
+          this.player.frame = 43;
+        } else {
+          this.player.frame = 33;
+        }
+      }
+      else if (this.player.facing == 'up') { this.player.frame = 21; }
       else if (this.player.facing == 'down') {
         if(blink) {
           this.player.blinkAnimation = this.player.animations.play('blinkDown', 9, false);
